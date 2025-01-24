@@ -3,3 +3,6 @@ flask_sqlalchemy
 flask_bcrypt 
 flask_cors 
 psycopg2
+psycopg2-binary
+python-dotenv
+gunicorn

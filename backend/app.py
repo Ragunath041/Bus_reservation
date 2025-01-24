@@ -2,19 +2,18 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import psycopg2
 from datetime import datetime
+import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": [
+    "http://localhost:3000",  # Local development
+    "https://your-frontend-domain.com"  # Production frontend URL
+]}})
 
-# Database connection setup
+# Update database connection to use environment variables
 try:
-    conn = psycopg2.connect(
-        dbname="bus_db",
-        user="postgres",
-        password="root",
-        host="localhost",
-        port="5432"
-    )
+    DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:root@localhost:5432/bus_db')
+    conn = psycopg2.connect(DATABASE_URL)
     print("Database connected successfully.")
 except Exception as e:
     print(f"Database connection error: {e}")
@@ -210,4 +209,5 @@ def get_bus_details(bus_id):
         return jsonify({"message": "An error occurred while fetching bus details."}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)

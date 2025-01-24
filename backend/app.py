@@ -10,9 +10,16 @@ CORS(app, resources={r"/*": {"origins": [
     "https://your-frontend-domain.com"  # Production frontend URL
 ]}})
 
-# Update database connection to use environment variables
+# Update database connection setup
 try:
-    DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:root@localhost:5432/bus_db')
+    DATABASE_URL = os.getenv('DATABASE_URL')
+    if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    
+    # Use default connection string for local development
+    if not DATABASE_URL:
+        DATABASE_URL = 'postgresql://postgres:root@localhost:5432/bus_db'
+    
     conn = psycopg2.connect(DATABASE_URL)
     print("Database connected successfully.")
 except Exception as e:
